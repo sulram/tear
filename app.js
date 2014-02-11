@@ -118,7 +118,6 @@ app.post('/pad', function(req, res){
 app.get('/pad/:slug', function(req, res){
   Pad
     .findOne({slug: req.params.slug})
-    .populate('posts')
     .exec(function (err, pad) {
       if(err) return next(err);
       if(!pad){
@@ -129,6 +128,17 @@ app.get('/pad/:slug', function(req, res){
       }
     });
   
+});
+
+// posts
+
+app.post('/posts', function(req, res){
+  Post
+    .find({pad: req.body.pad})
+    .exec(function (err, posts) {
+      if(err) return next(err);
+      res.json({posts: posts});
+    });
 });
 
 /**
@@ -149,6 +159,17 @@ app.io.route('add_post', function(req) {
         if(err) return next(err);
         app.io.broadcast('post_added',{
           post: post
+        });
+      });
+    }
+});
+
+app.io.route('remove_post', function(req) {
+    if(req.data.post_id){
+      Post.remove({_id: req.data.post_id},function(err) {
+        if(err) return next(err);
+        app.io.broadcast('post_removed',{
+          post_id: req.data.post_id
         });
       });
     }

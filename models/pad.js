@@ -3,23 +3,22 @@ var mongoose = require('mongoose')
   , ObjectId = Schema.ObjectId;
 
 var PadSchema = new Schema({
-	slug: {
-		type: String,
-		index: {
-			unique: true
-		}
-	},
-	posts: [{type:ObjectId, ref:'Post'}],
-	createdAt: Date,
-	updatedAt: Date
+  slug: {
+    type: String,
+    index: {
+      unique: true
+    }
+  },
+  createdAt: Date,
+  updatedAt: Date
 });
 
 PadSchema.pre('save', function(next) {
-	if(this.isNew) {
-		this.createdAt = new Date();
-	}
-	this.updatedAt = new Date();
-	next();
+  if(this.isNew) {
+    this.createdAt = new Date();
+  }
+  this.updatedAt = new Date();
+  next();
 });
 
 mongoose.model('Pad', PadSchema);

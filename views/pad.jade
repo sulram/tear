@@ -20,9 +20,6 @@ block content
           textarea#post_body(placeholder='escreva aqui').form-control
           input(type='submit', value='enviar').btn.btn-primary.btn-block
       #posts
-        ul
-          each post in pad.posts
-            li= post.body
 
 
   else
@@ -38,5 +35,6 @@ block scripts
   if pad
     script.
       var PAD = "#{pad._id}";
+    script(src='/js/moment.min.js')
     script(src='/js/director.min.js')
-    script(src='/js/app.js')
+    script(src='/js/app.js',type='text/jsx')
