@@ -11,13 +11,20 @@ function ut(d){
   return (new Date(d).getTime()/1000).toString();
 }
 
+// load moment lang
+
+moment.lang('pt-br');
+
 /**
  * Router
  */
 
 var router = Router({
   '/': [openIndex],
-  '/timelapse': [openTimelapse]
+  '/timelapse': [openTimelapse],
+  '/adm': function(){
+    $('body').addClass('admin');
+  }
 });
 
 router.init('/');
@@ -203,7 +210,7 @@ var PostInnerEdit = React.createClass({
   render: function() {
     return (
       <div id={this.props.id} className="post">
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSubmit} className="form-square">
           <textarea ref="body" rows="3" className="form-control">{this.props.body}</textarea>
           <input type="submit" className="btn btn-default btn-block" value="atualizar" />
         </form>
@@ -226,8 +233,8 @@ var PostInnerShow = React.createClass({
           <small>
             <FromNow date={this.props.date}/>
           </small>
-          <a href="#" onClick={this.props.clickDelete}><i className="fa fa-trash-o"></i></a>
-          <a href="#" onClick={this.props.clickEdit}><i className="fa fa-pencil"></i></a>
+          <span className="control btnDelete"><a href="#" onClick={this.props.clickDelete}><i className="fa fa-trash-o"></i></a></span>
+          <span className="control btnEdit"><a href="#" onClick={this.props.clickEdit}><i className="fa fa-pencil"></i></a></span>
         </p>
       </div>
     );

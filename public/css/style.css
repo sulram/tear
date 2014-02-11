@@ -46,6 +46,14 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   display: block;
 }
 
+#posts .btnDelete {
+  display: none;
+}
+
+body.admin #posts .btnDelete {
+  display: block;
+}
+
 #posts .post .body .hashtag {
   color: #3da8e3;
 }
@@ -54,10 +62,13 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   color: #999;
 }
 
-#posts .post .small a {
+#posts .post .small .control {
   float: right;
-  display: none;
   margin-left: 14px;
+}
+
+#posts .post .small a {
+  display: none;
   color: #999;
 }
 

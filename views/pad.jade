@@ -15,7 +15,7 @@ block content
             a(href='/')
               i.fa.fa-reply
     #sidebar
-      form#add_post
+      form#add_post.form-square
         textarea#post_body(placeholder='escreva aqui', rows='4').form-control
         input(type='submit', value='enviar').btn.btn-primary.btn-block
       #posts_wrapper
@@ -40,5 +40,6 @@ block scripts
     script(src='//cdnjs.cloudflare.com/ajax/libs/react/0.8.0/react-with-addons.min.js')
     script(src='//d3js.org/d3.v3.min.js')
     script(src='/js/moment.min.js')
+    script(src='/js/moment.pt-br.js')
     script(src='/js/director.min.js')
     script(src='/js/main.js',type='text/jsx')
