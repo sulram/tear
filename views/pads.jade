@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  .navbar.navbar-default.navbar-fixed-top
+    .navbar-header
+      a.navbar-brand(href='/') t.e.a.r.
+    .collapse.navbar-collapse      
+      ul.nav.navbar-nav.navbar-right
+        li
+          a(href='/')
+            i.fa.fa-reply
+  .container.mt100
+    h1 t.e.a.r.
+    ul
+      each pad in pads
+        li
+          a(href='/pad/'+pad.slug+'/')= pad.slug

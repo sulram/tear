@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  if pad
+    .navbar.navbar-default.navbar-fixed-top
+      .navbar-header
+        a.navbar-brand(href='#')= pad.slug
+      .collapse.navbar-collapse
+        ul.nav.navbar-nav
+          li
+            a(href='#/timelapse')
+              i.fa.fa-clock-o
+        ul.nav.navbar-nav.navbar-right
+          li
+            a(href='/')
+              i.fa.fa-reply
+    #sidebar
+      form#add_post
+        .form-group
+          textarea#post_body(placeholder='escreva aqui').form-control
+          input(type='submit', value='enviar').btn.btn-primary.btn-block
+      #posts
+        ul
+          each post in pad.posts
+            li= post.body
+
+
+  else
+    .navbar.navbar-default.navbar-fixed-top
+      .navbar-header
+        a.navbar-brand(href='#')= title
+      .collapse.navbar-collapse
+        ul.nav.navbar-nav.navbar-right
+          li
+            a(href='/') novo pad
+
+block scripts
+  if pad
+    script.
+      var PAD = "#{pad._id}";
+    script(src='/js/director.min.js')
+    script(src='/js/app.js')

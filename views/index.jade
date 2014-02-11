@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  .navbar.navbar-default.navbar-fixed-top
+    .navbar-header
+      a.navbar-brand(href='/') t.e.a.r.
+    .collapse.navbar-collapse
+      ul.nav.navbar-nav.navbar-right
+        li
+          a(href='/pads')
+            i.fa.fa-align-justify
+  .container.mt100
+    h1 t.e.a.r.
+    h4 textos. esquemas. associações. relações.
+    p uma forma simples e fabulosa de tecer e visualizar redes de palavras em tempo real
+    hr
+    form(action='pad',method='POST').form-inline.form-square
+      .form-group
+        input(type='text',name='slug',placeholder='digite o nome do arquivo',style='width:300px;').form-control
+      .form-group
+        input(type='submit',value='entrar').btn.btn-square.btn-default

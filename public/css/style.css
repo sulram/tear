@@ -1,0 +1,29 @@
+body {
+	font-family: 'Lato', sans-serif;
+	background: #f7f7f7;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	font-family: 'Lato', sans-serif;
+}
+
+.mt100 {
+	margin-top: 100px;
+}
+
+#sidebar{
+	top: 50px;
+	right: 0;
+	background: #efefef;
+	position: absolute;
+	width: 400px;
+}
+
+#add_post {
+	padding: 10px;
+}
+
+#add_post textarea {
+	width: 100%;
+	height: 75px;
+}

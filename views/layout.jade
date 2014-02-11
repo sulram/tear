@@ -1,0 +1,17 @@
+doctype html
+html
+  head
+    title= 't.e.a.r. ' + title
+    link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Lato')
+    link(rel='stylesheet', href='/bootflat/bootstrap/bootstrap.min.css')
+    link(rel='stylesheet', href='/bootflat/css/font-awesome.min.css')
+    link(rel='stylesheet', href='/bootflat/css/bootflat.css')
+    link(rel='stylesheet', href='/bootflat/css/bootflat-extensions.css')
+    link(rel='stylesheet', href='/bootflat/css/bootflat-square.css')
+    link(rel='stylesheet', href='/css/style.css')
+  body
+    block content
+    script(src='http://code.jquery.com/jquery-1.10.1.min.js')
+    script(src='/socket.io/socket.io.js')
+    script(src='/bootflat/js/bootstrap.min.js')
+    block scripts
