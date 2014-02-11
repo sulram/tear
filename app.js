@@ -179,13 +179,15 @@ app.io.route('update_post', function(req, res, next) {
     if(req.data.post_id){
       Post.findOne({_id: req.data.post_id}, function(err, post) {
         if(err) return next(err);
-        post.body = req.data.post_body;
-        post.save();
-        app.io.broadcast('post_updated',{
-          post_id: req.data.post_id,
-          post_body: req.data.post_body,
-          post_now: new Date()
-        });
+        if(post.body !== req.data.post_body){
+          post.body = req.data.post_body;
+          post.save();
+          app.io.broadcast('post_updated',{
+            post_id: req.data.post_id,
+            post_body: req.data.post_body,
+            post_now: new Date()
+          });
+        }
       });
     }
 });
