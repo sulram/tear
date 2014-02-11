@@ -38,12 +38,16 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 #posts .post .body {
-  font-size: 1.5em;
+  font-size: 1.4em;
   color: #444;
 }
 
-#posts .post .body span {
+#posts .post .body .line {
   display: block;
+}
+
+#posts .post .body .hashtag {
+  color: #3da8e3;
 }
 
 #posts .post .small {

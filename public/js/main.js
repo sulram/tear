@@ -103,6 +103,7 @@ var PostBox = React.createClass({
   post_added: function(data){
     _posts.push(data.post);
     this.setState({posts: _posts});
+    $('#post_body').val('');
   },
   post_removed: function(data){
     _posts = _.without(_posts, _.findWhere(_posts, {_id: data.post_id}));
@@ -214,11 +215,41 @@ var PostInnerEdit = React.createClass({
 // PostInnerShow: editmode = false
 
 var PostInnerShow = React.createClass({
+  render: function() {
+    var body = this.props.body.split('\n').map(function(val,i){
+      return <PostLine text={val} />;
+    });
+    return (
+      <div id={this.props.id} className="post">
+        <p className="body">{body}</p>
+        <p className="small">
+          <small>
+            <FromNow date={this.props.date}/>
+          </small>
+          <a href="#" onClick={this.props.clickDelete}><i className="fa fa-trash-o"></i></a>
+          <a href="#" onClick={this.props.clickEdit}><i className="fa fa-pencil"></i></a>
+        </p>
+      </div>
+    );
+  }
+});
+
+var PostLine = React.createClass({
+  render: function(){
+    var tokens = this.props.text.split(/#(\S*)/g);
+    for (var i = 1; i < tokens.length; i += 2) {
+      tokens[i] = <span className="hashtag">{'#'+tokens[i]}</span>;
+    }
+    return <span className="line">{tokens}</span>;
+  }
+});
+
+var FromNow = React.createClass({
   getInitialState: function() {
-    return {fromnow: null};
+    return {moment: null};
   },
   tick: function() {
-    this.setState({fromnow: moment(this.props.date).fromNow()});
+    this.setState({moment: moment(this.props.date).fromNow()});
   },
   componentDidMount: function() {
     this.interval = setInterval(this.tick, 1000);
@@ -227,22 +258,9 @@ var PostInnerShow = React.createClass({
   componentWillUnmount: function() {
     clearInterval(this.interval);
   },
-  render: function() {
-    var date = moment(this.props.date).fromNow();
-    var body = this.props.body.split('\n').map(function(val,i){
-      return <span>{val}</span>;
-    });
+  render: function(){
     return (
-      <div id={this.props.id} className="post">
-        <p className="body">{body}</p>
-        <p className="small">
-          <small>
-            {this.state.fromnow}
-          </small>
-          <a href="#" onClick={this.props.clickDelete}><i className="fa fa-trash-o"></i></a>
-          <a href="#" onClick={this.props.clickEdit}><i className="fa fa-pencil"></i></a>
-        </p>
-      </div>
+      <span>{this.state.moment}</span>
     );
   }
 });
