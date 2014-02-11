@@ -167,6 +167,15 @@ var Post = React.createClass({
       editmode: false
     };
   },
+  componentDidMount: function() {
+    $('#post_body').bind('focus', this.handleFocusNewPost);
+  },
+  componentWillUnmount: function() {
+    $('#post_body').unbind('focus', this.handleFocusNewPost);
+  },
+  handleFocusNewPost: function(){
+    this.setState({editmode: false});
+  },
   handleEdit: function(){
     this.setState({editmode: true});
   },
