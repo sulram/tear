@@ -220,9 +220,12 @@ var PostInnerShow = React.createClass({
   },
   render: function() {
     var date = moment(this.props.date).fromNow();
+    var body = this.props.body.split('\n').map(function(val,i){
+      return <span>{val}</span>;
+    });
     return (
       <div id={this.props.id} className="post">
-        <p className="body">{this.props.body}</p>
+        <p className="body">{body}</p>
         <p className="small">
           <small>
             {this.state.fromnow}
