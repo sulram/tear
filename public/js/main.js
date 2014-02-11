@@ -38,7 +38,7 @@ var $win = $(window);
 
 $win.resize(function(e){
   $('#sidebar').height($win.height()-50);
-  $('#posts_wrapper').height($win.height()-196);
+  $('#posts_wrapper').height($win.height()-185);
 });
 
 $win.resize();
@@ -193,9 +193,9 @@ var PostInnerEdit = React.createClass({
   render: function() {
     return (
       <div id={this.props.id} className="post">
-        <form className="editForm" onSubmit={this.handleSubmit}>
-          <textarea ref="body">{this.props.body}</textarea>
-          <input type='submit' />
+        <form onSubmit={this.handleSubmit}>
+          <textarea ref="body" rows="3" className="form-control">{this.props.body}</textarea>
+          <input type="submit" className="btn btn-default btn-block" value="atualizar" />
         </form>
       </div>
     );
@@ -222,7 +222,7 @@ var PostInnerShow = React.createClass({
     var date = moment(this.props.date).fromNow();
     return (
       <div id={this.props.id} className="post">
-        <p>{this.props.body}</p>
+        <p className="body">{this.props.body}</p>
         <p className="small">
           <small>
             {this.state.fromnow}
