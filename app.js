@@ -73,13 +73,13 @@ var Post = mongoose.model('Post');
 
 // home, create new pad
 
-app.get('/', function(req, res){
+app.get('/', function(req, res, next){
   res.render('index', {title: 'home'});
 });
 
 // list all pads
 
-app.get('/pads', function(req, res){
+app.get('/pads', function(req, res, next){
   Pad.find(function (err, pads) {
     res.render('pads', {title: 'lista', pads: pads});
   });
@@ -87,13 +87,13 @@ app.get('/pads', function(req, res){
 
 // forbid accesse pad from browser
 
-app.get('/pad', function(req, res){
+app.get('/pad', function(req, res, next){
   res.redirect('/');
 });
 
 // create pad or redirect to pad with slug
 
-app.post('/pad', function(req, res){
+app.post('/pad', function(req, res, next){
   if(req.body.slug.trim() === ''){
     return res.redirect('/');
   }
@@ -115,7 +115,7 @@ app.post('/pad', function(req, res){
 
 // open pad with slug
 
-app.get('/pad/:slug', function(req, res){
+app.get('/pad/:slug', function(req, res, next){
   Pad
     .findOne({slug: req.params.slug})
     .exec(function (err, pad) {
@@ -132,7 +132,7 @@ app.get('/pad/:slug', function(req, res){
 
 // posts
 
-app.post('/posts', function(req, res){
+app.post('/posts', function(req, res, next){
   Post
     .find({pad: req.body.pad})
     .exec(function (err, posts) {
@@ -145,11 +145,11 @@ app.post('/posts', function(req, res){
  * Sockets
  */
 
-app.io.route('ready', function(req) {
+app.io.route('ready', function(req, res, next) {
   app.io.broadcast('new visitor');
 });
 
-app.io.route('add_post', function(req) {
+app.io.route('add_post', function(req, res, next) {
     if(req.data.pad && req.data.post_body.trim() !== ''){
       var post = new Post({
         body: req.data.post_body,
@@ -164,12 +164,27 @@ app.io.route('add_post', function(req) {
     }
 });
 
-app.io.route('remove_post', function(req) {
+app.io.route('remove_post', function(req, res, next) {
     if(req.data.post_id){
       Post.remove({_id: req.data.post_id},function(err) {
         if(err) return next(err);
         app.io.broadcast('post_removed',{
           post_id: req.data.post_id
+        });
+      });
+    }
+});
+
+app.io.route('update_post', function(req, res, next) {
+    if(req.data.post_id){
+      Post.findOne({_id: req.data.post_id}, function(err, post) {
+        if(err) return next(err);
+        post.body = req.data.post_body;
+        post.save();
+        app.io.broadcast('post_updated',{
+          post_id: req.data.post_id,
+          post_body: req.data.post_body,
+          post_now: new Date()
         });
       });
     }

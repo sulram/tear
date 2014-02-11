@@ -19,7 +19,8 @@ block content
         .form-group
           textarea#post_body(placeholder='escreva aqui').form-control
           input(type='submit', value='enviar').btn.btn-primary.btn-block
-      #posts
+      #posts_wrapper
+        #posts
 
 
   else
@@ -37,4 +38,4 @@ block scripts
       var PAD = "#{pad._id}";
     script(src='/js/moment.min.js')
     script(src='/js/director.min.js')
-    script(src='/js/app.js',type='text/jsx')
+    script(src='/js/main.js',type='text/jsx')
