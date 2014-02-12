@@ -13,6 +13,8 @@ var express = require('express.io')
 
 mongoose.connect(config.db);
 
+console.log(process.env);
+
 var app = express();
 
 app.http().io();
