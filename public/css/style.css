@@ -11,10 +11,16 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   margin-top: 100px;
 }
 
+#gui {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+}
+
 #sidebar{
   top: 50px;
   right: 0;
-  background: #efefef;
+  background: #f7f7f7;
   position: absolute;
   width: 400px;
 }
@@ -35,6 +41,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
   background: #fff;
   padding: 10px;
   margin-bottom: 2px;
+  margin-left: 4px;
 }
 
 #posts .post .body {
@@ -75,3 +82,38 @@ body.admin #posts .btnDelete {
 #posts .post:hover .small a {
   display: inline-block;
 }
+
+#vis {
+  margin-top: 50px;
+}
+
+#vis .bg {
+  fill: #f9f9f9;
+  cursor: all-scroll;
+}
+
+.node .circle{
+  fill: rgba(0,0,0,0);
+  cursor: crosshair;
+}
+
+.node .text {
+  fill: #444;
+  cursor: crosshair;
+}
+
+.node .text-stroke {
+  fill: none;
+  stroke: rgba(255,255,255,.8);
+  stroke-width: 6px;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  stroke-opacity: 1;
+  cursor: crosshair;
+}
+
+.link {
+  stroke: rgba(0,0,0,.25);
+  cursor: crosshair;
+}
+

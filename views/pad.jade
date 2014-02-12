@@ -2,7 +2,7 @@ extends layout
 
 block content
   if pad
-    .navbar.navbar-default.navbar-fixed-top
+    .navbar.navbar-fixed-top
       .navbar-header
         a.navbar-brand(href='#')= pad.slug
       .collapse.navbar-collapse
@@ -14,6 +14,8 @@ block content
           li
             a(href='/')
               i.fa.fa-reply
+    #vis
+    #gui
     #sidebar
       form#add_post.form-square
         textarea#post_body(placeholder='escreva aqui', rows='4').form-control
@@ -39,7 +41,9 @@ block scripts
     script(src='//cdnjs.cloudflare.com/ajax/libs/react/0.8.0/JSXTransformer.js')
     script(src='//cdnjs.cloudflare.com/ajax/libs/react/0.8.0/react-with-addons.min.js')
     script(src='//d3js.org/d3.v3.min.js')
-    script(src='/js/moment.min.js')
-    script(src='/js/moment.pt-br.js')
-    script(src='/js/director.min.js')
-    script(src='/js/main.js',type='text/jsx')
+    script(src='/js/libs/moment.min.js')
+    script(src='/js/libs/moment.pt-br.js')
+    script(src='/js/libs/director.min.js')
+    script(src='/js/libs/dat.gui.min.js')
+    script(src='/js/main.js')
+    script(src='/js/main-components.js',type='text/jsx')

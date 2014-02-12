@@ -1,9 +1,8 @@
-/** @jsx React.DOM */
-
-
 /**
  * Utils
  */
+
+var hash_regex = /#([a-zA-Z0-9À-úÇç_\-]*)/g;
 
 // return unix time
 
@@ -44,11 +43,15 @@ function openTimelapse(){
 var $win = $(window);
 
 $win.resize(function(e){
+  var w = $win.width();
+  var h = $win.height();
   $('#sidebar').height($win.height()-50);
   $('#posts_wrapper').height($win.height()-185);
 });
 
 $win.resize();
+
+$('body').css({overflow:'hidden'});
 
 /**
  * Submit post
@@ -62,6 +65,13 @@ $('#add_post').submit(function(e){
     post_body: $('#post_body').val()
   });
   e.preventDefault();
+  return false;
+});
+
+$('#post_body').bind('keydown',function(e){
+  if(e.keyCode == 13 && (e.metaKey || e.ctrlKey)) {
+    $('#add_post').submit();
+  }
 });
 
 /**
@@ -83,200 +93,246 @@ io.on('new visitor', function() {
 var _posts = [];
 
 /**
- * React Components
+ * D3 VIS
  */
 
-// PostBox: control posts flow
-
-var PostBox = React.createClass({
-  getInitialState: function() {
-    io.on('post_added', this.post_added);
-    io.on('post_removed', this.post_removed);
-    io.on('post_updated', this.post_updated);
-    return {posts: []};
-  },
-  componentWillMount: function() {
-    $.ajax({
-      dataType: 'json',
-      url: '/posts',
-      method: 'POST',
-      data: {pad: PAD},
-      success: function( data ) {
-        _posts = data.posts;
-        this.setState({posts: _posts});
-      }.bind(this)
-    });
-  },
-  post_added: function(data){
-    _posts.push(data.post);
-    this.setState({posts: _posts});
-    $('#post_body').val('');
-  },
-  post_removed: function(data){
-    _posts = _.without(_posts, _.findWhere(_posts, {_id: data.post_id}));
-    this.setState({posts: _posts});
-  },
-  post_updated: function(data){
-    var index = _.indexOf(_posts, _.findWhere(_posts, {_id: data.post_id}));
-    _posts[index].body = data.post_body;
-    _posts[index].updatedAt = data.post_now;
-    this.setState({posts: _posts});
-    console.log(data.post_body);
-  },
-  deletePost: function(id){
-    io.emit('remove_post',{
-      post_id: id
-    });
-  },
-  updatePost: function(id,body){
-    io.emit('update_post',{
-      post_id: id,
-      post_body: body,
-    });
-  },
-  render: function() {
-    return (
-      <PostList posts={this.state.posts} handleDelete={this.deletePost} handleUpdate={this.updatePost} />
-    );
-  }
-});
-
-// PostList: wrapper for list of posts
-
-var PostList = React.createClass({
-  handleDelete: function(id){
-    this.props.handleDelete(id);
-    return false;
-  },
-  handleEdit: function(id){
-    this.props.handleDelete(id);
-    return false;
-  },
-  render: function() {
-    var _this = this;
-    var postNodes = _.sortBy( this.props.posts, function(a){
-        return ut(a.createdAt) * -1;
-      }).map(function (post,i) {
-        return <Post id={post._id} handleUpdate={_this.props.handleUpdate} clickDelete={_this.handleDelete.bind(_this, post._id)} body={post.body} date={post.updatedAt}/>;
-      });
-    return (
-      <div className="postList">
-        {postNodes}
-      </div>
-    );
-  }
-});
-
-// Post: component with 2 states: edit and show
-
-var Post = React.createClass({
-  getInitialState: function() {
-    return {
-      editmode: false
-    };
-  },
-  componentDidMount: function() {
-    $('#post_body').bind('focus', this.handleFocusNewPost);
-  },
-  componentWillUnmount: function() {
-    $('#post_body').unbind('focus', this.handleFocusNewPost);
-  },
-  handleFocusNewPost: function(){
-    this.setState({editmode: false});
-  },
-  handleEdit: function(){
-    this.setState({editmode: true});
-  },
-  handleUpdate: function(id, body){
-    this.setState({editmode: false});
-    this.props.handleUpdate(id, body);
-  },
-  render: function() {
-    var child = this.state.editmode
-      ? <PostInnerEdit id={this.props.id} body={this.props.body} handleUpdate={this.handleUpdate} />
-      : <PostInnerShow id={this.props.id} body={this.props.body} date={this.props.date} clickEdit={this.handleEdit} clickDelete={this.props.clickDelete} />;
-    return child;
-  }
-});
-
-// PostInnerEdit: editmode = true
-
-var PostInnerEdit = React.createClass({
-  handleSubmit: function(){
-    var body = this.refs.body.getDOMNode().value.trim();
-    this.props.handleUpdate(this.props.id, body);
-    return false;
-  },
-  render: function() {
-    return (
-      <div id={this.props.id} className="post">
-        <form onSubmit={this.handleSubmit} className="form-square">
-          <textarea ref="body" rows="3" className="form-control">{this.props.body}</textarea>
-          <input type="submit" className="btn btn-default btn-block" value="atualizar" />
-        </form>
-      </div>
-    );
-  }
-});
-
-// PostInnerShow: editmode = false
-
-var PostInnerShow = React.createClass({
-  render: function() {
-    var body = this.props.body.split('\n').map(function(val,i){
-      return <PostLine text={val} />;
-    });
-    return (
-      <div id={this.props.id} className="post">
-        <p className="body">{body}</p>
-        <p className="small">
-          <small>
-            <FromNow date={this.props.date}/>
-          </small>
-          <span className="control btnDelete"><a href="#" onClick={this.props.clickDelete}><i className="fa fa-trash-o"></i></a></span>
-          <span className="control btnEdit"><a href="#" onClick={this.props.clickEdit}><i className="fa fa-pencil"></i></a></span>
-        </p>
-      </div>
-    );
-  }
-});
-
-var PostLine = React.createClass({
-  render: function(){
-    var tokens = this.props.text.split(/#(\S*)/g);
-    for (var i = 1; i < tokens.length; i += 2) {
-      tokens[i] = <span className="hashtag">{'#'+tokens[i]}</span>;
+function findIndex(collection, param, value) {
+    for (var i = 0; i < collection.length; i++) {
+        if(collection[i][param] == value) return i;
     }
-    return <span className="line">{tokens}</span>;
+    return -1;
+}
+
+var nodes = [];
+var links = [];
+
+var gui, redraw, force, link, node, zoom, drag, vis, rect, wrapper;
+
+var VIS = {
+
+  constants: {
+    linkDistance: 100,
+    gravity: 0.1,
+    charge: 300,
+    fontSize: 1,
+    strokeWeight: 1
+  },
+
+  init: function(){
+
+    var w = $win.width()-400;
+    var h = $win.height()-50;
+
+    w = w < 960 ? 960 : w;
+    h = h < 960 ? 960 : h;
+
+    gui = new dat.GUI({ autoPlace: false });
+
+    gui.add(this.constants, 'linkDistance', 0, 1000)
+      .onChange(function(value) {
+        force.linkDistance(value);
+        force.start();
+      });
+    gui.add(this.constants, 'gravity', 0, 1)
+      .step(0.01)
+      .onChange(function(value) {
+        force.gravity(value);
+        force.start();
+      });
+    gui.add(this.constants, 'charge', 0, 2000)
+      .onChange(function(value) {
+        force.charge(-value);
+        force.start();
+      });
+    gui.add(this.constants, 'fontSize', 0.1, 20).onChange(this.tick);
+    gui.add(this.constants, 'strokeWeight', 0.1, 5).onChange(this.tick);
+
+    var customContainer = document.getElementById('gui');
+    customContainer.appendChild(gui.domElement);
+
+    zoom = d3.behavior.zoom()
+      .scaleExtent([0.1, 10])
+      .on("zoom", VIS.zoomed);
+
+    drag = d3.behavior.drag()
+      .origin(function(d) { return d; })
+      .on("dragstart", VIS.dragstarted)
+      .on("drag", VIS.dragged)
+      .on("dragend", VIS.dragended);
+
+    vis = d3.select("#vis").append("svg")
+      .attr("width", w)
+      .attr("height", h)
+      .append('g').call(zoom);
+
+    rect = vis.append('rect')
+      .attr("class", "bg")
+      .attr('width', w)
+      .attr('height', h)
+      .style("pointer-events", "all");
+
+    wrapper = vis.append('g');
+
+    node = wrapper.selectAll(".node");
+    link = wrapper.selectAll(".link");
+
+    _.each(_posts, function(post,i){
+      VIS.nodes_to_add(post.body);
+    });
+
+    force = d3.layout.force()
+      .size([$win.width()-400, $win.height()-50])
+      .nodes(nodes)
+      .links(links)
+      .linkDistance(100)
+      .charge(-300)
+      .gravity(0.1)
+      .on("tick", this.tick);
+
+    this.forcestart();
+  },
+
+  nodes_to_remove: function(text){
+    var tags = text.match(hash_regex);
+    if(tags && tags.length){
+      for(var i=0; i < tags.length-1; i++){
+        for(var j=i+1; j < tags.length; j++){
+          VIS.link_process(tags[i],tags[j],true);
+        }
+      }
+    }
+    _.each(tags, function(tag,j){
+      VIS.node_process(tag,true);
+    });
+    this.forcestart();
+  },
+
+  nodes_to_add: function(text, start){
+    var tags = text.match(hash_regex);
+    _.each(tags, function(tag,j){
+      VIS.node_process(tag);
+    });
+    if(tags && tags.length){
+      for(var i=0; i < tags.length-1; i++){
+        for(var j=i+1; j < tags.length; j++){
+          VIS.link_process(tags[i],tags[j]);
+        }
+      }
+    }
+    if(start) this.forcestart();
+  },
+
+  node_process: function(tag,remove){
+    var node = findIndex(nodes, 'name', tag);
+    if(remove){
+      if(node !== -1){
+        nodes[node].size--;
+        if(nodes[node].size === 0){
+          nodes.splice(node, 1);
+        }
+      }
+    } else {
+      if(node !== -1){
+        nodes[node].size++;
+      } else {
+        nodes.push({name: tag, size: 1});
+      }
+    }
+  },
+
+  link_process: function(a,b,remove){
+    var A = nodes[findIndex(nodes, 'name', a)];
+    var B = nodes[findIndex(nodes, 'name', b)];
+    var test1 = findIndex(links, 'name', a+"-"+b);
+    var test2 = findIndex(links, 'name', b+"-"+a);
+    var index =
+      test1 != -1
+        ? test1
+        : test2 != -1
+          ? test2
+          : null;
+    if(remove){
+      if(index !== null){
+        links[index].size--;
+        if(links[index].size === 0){
+          links.splice(index, 1);
+        }
+      }
+    } else {
+      if(index === null){
+        links.push({name: a+"-"+b, source: A, target: B, size: 1});
+      } else {
+        links[index].size++;
+      }
+    }
+  },
+
+  forcestart: function() {
+
+    link = link.data(force.links(), function(d) { return d.source.name + "-" + d.target.name; });
+
+    link.enter().insert("line", ".node")
+        .attr("class", "link")
+        .attr("stroke-width", function(d){ return 1 + d.size; });
+
+    link.exit().remove();
+
+    node = node.data(force.nodes(), function(d) { return d.name; });
+
+    var node_g = node.enter().insert("g")
+        .attr("class", "node")
+        .call(drag);
+
+    node.exit().remove();
+
+    node_g.append("svg:circle")
+            .attr("class", "circle");
+
+    node_g.append("svg:text")
+            .attr("class", "text text-stroke")
+            .attr("dy", ".3em")
+            .attr("text-anchor", "middle")
+            .text(function(d) { return d.name; });
+
+    node_g.append("svg:text")
+            .attr("class", "text")
+            .attr("dy", ".3em")
+            .attr("text-anchor", "middle")
+            .text(function(d) { return d.name; });
+
+    force.start();
+  },
+
+  tick: function () {
+
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; })
+        .attr("stroke-width", function(d){ return 1 + d.size * VIS.constants.strokeWeight; });
+
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+    node.selectAll('.circle').attr("r", function(d) { return 10 + d.size; });
+    node.selectAll('.text').attr("font-size", function(d) { return 12 + d.size * VIS.constants.fontSize; });
+
+  },
+
+  zoomed: function() {
+    wrapper.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+  },
+
+  dragstarted: function(d) {
+    d3.event.sourceEvent.stopPropagation();
+    d3.select(this).classed("dragging", true);
+  },
+
+  dragged: function(d) {
+    d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+  },
+
+  dragended: function(d) {
+    d3.select(this).classed("dragging", false);
+    force.start();
   }
-});
-
-var FromNow = React.createClass({
-  getInitialState: function() {
-    return {moment: null};
-  },
-  tick: function() {
-    this.setState({moment: moment(this.props.date).fromNow()});
-  },
-  componentDidMount: function() {
-    this.interval = setInterval(this.tick, 1000);
-    this.tick();
-  },
-  componentWillUnmount: function() {
-    clearInterval(this.interval);
-  },
-  render: function(){
-    return (
-      <span>{this.state.moment}</span>
-    );
-  }
-});
-
-/**
- * Init App
- */
-
-React.renderComponent(
-  <PostBox />,
-  document.getElementById('posts')
-);
+};
