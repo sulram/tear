@@ -7,8 +7,8 @@ var express = require('express.io')
   , fs = require('fs')
   , http = require('http')
   , path = require('path')
-  , mongoose = require('mongoose'),
-  , config = require(config);
+  , mongoose = require('mongoose')
+  , config = require('config');
 
 
 mongoose.connect(config.db);
