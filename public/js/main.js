@@ -126,9 +126,13 @@ var VIS = {
     w = w < 960 ? 960 : w;
     h = h < 960 ? 960 : h;
 
-    gui = new dat.GUI({ autoPlace: false });
+    gui = new dat.GUI({
+      autoPlace: false
+    });
 
-    gui.add(this.constants, 'linkDistance', 0, 1000)
+    gui.remember(this.constants);
+
+    gui.add(this.constants, 'linkDistance', 0, 300)
       .onChange(function(value) {
         force.linkDistance(value);
         force.start();
@@ -184,10 +188,12 @@ var VIS = {
       .size([$win.width()-400, $win.height()-50])
       .nodes(nodes)
       .links(links)
-      .linkDistance(100)
-      .charge(-300)
-      .gravity(0.1)
-      .on("tick", this.tick);
+      .linkDistance(VIS.constants.linkDistance)
+      .charge(VIS.constants.charge * -1)
+      .gravity(VIS.constants.gravity)
+      .friction(0.9)
+      .on("tick", this.tick)
+      .on('end', function() { force.alpha(0.01); console.log('restart tick'); });
 
     this.forcestart();
   },
@@ -333,6 +339,5 @@ var VIS = {
 
   dragended: function(d) {
     d3.select(this).classed("dragging", false);
-    force.start();
   }
 };
