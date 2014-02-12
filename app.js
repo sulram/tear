@@ -8,10 +8,11 @@ var express = require('express.io')
   , http = require('http')
   , path = require('path')
   , mongoose = require('mongoose')
-  , config = require('./config');
+  , config = require('./config')
+  , env = process.env;
 
-
-mongoose.connect(config.db);
+console.log(env.MONGODB_USERNAME,env.MONGODB_PASSWORD,env.MONGODB_PORT,env.MONGO_URL,env.MONGODB_DATABASE);
+mongoose.connect('mongodb://'+env.MONGODB_USERNAME+':'+env.MONGODB_PASSWORD+'@'+env.MONGO_URL+':'+env.MONGODB_PORT+'/'+env.MONGODB_DATABASE);
 
 var app = express();
 
