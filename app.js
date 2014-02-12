@@ -11,10 +11,8 @@ var express = require('express.io')
   , config = require('./config')
   , env = process.env;
 
-console.log(env.MONGODB_USERNAME,env.MONGODB_PASSWORD,env.MONGODB_PORT,env.MONGO_URL,env.MONGODB_DATABASE);
-mongoose.connect('mongodb://'+env.MONGODB_USERNAME+':'+env.MONGODB_PASSWORD+'@'+env.MONGO_URL+':'+env.MONGODB_PORT+'/'+env.MONGODB_DATABASE);
-
 console.log(process.env);
+mongoose.connect(env.MONGO_URL);
 
 var app = express();
 
