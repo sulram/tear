@@ -7,10 +7,11 @@ var express = require('express.io')
   , fs = require('fs')
   , http = require('http')
   , path = require('path')
-  , mongoose = require('mongoose');
+  , mongoose = require('mongoose'),
+  , config = require(config);
 
 
-mongoose.connect('mongodb://localhost/hashpad');
+mongoose.connect(config.db);
 
 var app = express();
 
