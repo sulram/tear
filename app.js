@@ -7,12 +7,9 @@ var express = require('express.io')
   , fs = require('fs')
   , http = require('http')
   , path = require('path')
-  , mongoose = require('mongoose')
-  , config = require('./config')
-  , env = process.env;
+  , mongoose = require('mongoose');
 
-console.log(process.env);
-mongoose.connect(env.MONGO_URL);
+mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost/tear');
 
 var app = express();
 
