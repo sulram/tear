@@ -15,25 +15,6 @@ function ut(d){
 moment.lang('pt-br');
 
 /**
- * Router
- */
-
-var router = Router({
-  '/': [openIndex],
-  '/timelapse': [openTimelapse]
-});
-
-router.init('/');
-
-function openIndex(){
-  console.log('index');
-}
-
-function openTimelapse(){
-  console.log('timelapse');
-}
-
-/**
  * Window
  */
 
@@ -88,6 +69,8 @@ io.on('new visitor', function() {
  */
 
 var _posts = [];
+var _posts_temp = [];
+var _posts_loaded = [];
 
 /**
  * D3 VIS
@@ -177,10 +160,6 @@ var VIS = {
     node = wrapper.selectAll(".node");
     link = wrapper.selectAll(".link");
 
-    _.each(_posts, function(post,i){
-      VIS.nodes_to_add(post.body);
-    });
-
     force = d3.layout.force()
       .size([$win.width()-400, $win.height()-50])
       .nodes(nodes)
@@ -188,7 +167,7 @@ var VIS = {
       .linkDistance(VIS.constants.linkDistance)
       .charge(VIS.constants.charge * -1)
       .gravity(VIS.constants.gravity)
-      .friction(0.9)
+      .friction(0.7)
       .on("tick", this.tick)
       .on('end', function() { force.alpha(0.01); console.log('restart tick'); });
 
@@ -338,3 +317,5 @@ var VIS = {
     d3.select(this).classed("dragging", false);
   }
 };
+
+VIS.init();

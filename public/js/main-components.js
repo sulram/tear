@@ -36,17 +36,75 @@ var PostBox = React.createClass({
     return {posts: []};
   },
   componentWillMount: function() {
-    $.ajax({
-      dataType: 'json',
-      url: '/posts',
-      method: 'POST',
-      data: {pad: PAD},
-      success: function( data ) {
-        _posts = data.posts;
-        this.setState({posts: _posts});
-        VIS.init();
-      }.bind(this)
+    
+    var _this = this;
+
+    var router = Router({
+      '/': [clear,openIndex],
+      '/timelapse': [clear,openTimelapse]
     });
+
+    router.init('/');
+
+    function clear(){
+      clearInterval(_this.interval);
+    }
+
+    function openIndex(){
+      console.log('index');
+      _this.setState({posts: []});
+      $.ajax({
+        dataType: 'json',
+        url: '/posts',
+        method: 'POST',
+        data: {pad: PAD},
+        success: function( data ) {
+          _posts = data.posts;
+          links = [];
+          nodes = [];
+          force.nodes(nodes).links(links);
+          _.each(_posts, function(post,i){
+            VIS.nodes_to_add(post.body);
+            VIS.forcestart();
+          });
+          _this.setState({posts: data.posts});
+        }.bind(_this)
+      });
+    }
+
+    function openTimelapse(){
+      console.log('timelapse');
+      _this.setState({posts: []});
+      $.ajax({
+        dataType: 'json',
+        url: '/posts',
+        method: 'POST',
+        data: {pad: PAD},
+        success: function( data ) {
+          _posts_temp = data.posts;
+          _posts = [];
+          links = [];
+          nodes = [];
+          force.nodes(nodes).links(links);
+          _this.setState({posts: []});
+          _this.interval = setInterval(_this.tick, 3000);
+          _this.tick();
+        }.bind(_this)
+      });
+    }
+  },
+  componentWillUnmount: function() {
+    clearInterval(this.interval);
+  },
+  tick: function(){
+    if(_posts_temp.length <= 0){
+      clearInterval(this.interval);
+    }else{
+      var post = _posts_temp.shift();
+      _posts.push(post);
+      this.setState({posts: _posts});
+      VIS.nodes_to_add(post.body,true);
+    }
   },
   post_added: function(data){
     _posts.push(data.post);
@@ -233,11 +291,7 @@ var FromNow = React.createClass({
   }
 });
 
-/**
- * Init App
- */
-
 React.renderComponent(
-  <PostBox />,
+  <PostBox/>,
   document.getElementById('posts')
 );
