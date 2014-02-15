@@ -91,11 +91,11 @@ var gui, redraw, force, link, node, zoom, drag, vis, rect, wrapper;
 var VIS = {
 
   constants: {
-    linkDistance: 100,
-    gravity: 0.1,
-    charge: 300,
-    fontSize: 1,
-    strokeWeight: 1
+    linkDistance: 50,
+    gravity: 0.4,
+    charge: 1700,
+    fontSize: 1.6,
+    strokeWeight: 1.6
   },
 
   init: function(){
