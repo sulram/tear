@@ -20,10 +20,7 @@ moment.lang('pt-br');
 
 var router = Router({
   '/': [openIndex],
-  '/timelapse': [openTimelapse],
-  '/adm': function(){
-    $('body').addClass('admin');
-  }
+  '/timelapse': [openTimelapse]
 });
 
 router.init('/');
