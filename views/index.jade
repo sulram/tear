@@ -14,8 +14,11 @@ block content
     h4 textos entrelaçados por associações e relações.
     p uma máquina para tecer e visualizar redes de palavras em tempo real
     hr
-    form(action='pad',method='POST').form-inline.form-square
-      .form-group
-        input(type='text',name='slug',placeholder='digite o nome do arquivo',style='width:300px;').form-control
-      .form-group
-        input(type='submit',value='entrar').btn.btn-square.btn-default
+    if authenticated_p
+      form(action='pad',method='POST').form-inline.form-square
+        .form-group
+          input(type='text',name='slug',placeholder='digite o nome do arquivo',style='width:300px;').form-control
+        .form-group
+          input(type='submit',value='entrar').btn.btn-square.btn-default
+    else
+      div.fb-login-button(data-max-rows="1",data-size="medium",data-show-faces="false",data-auto-logout-link="false")
