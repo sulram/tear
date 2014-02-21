@@ -191,6 +191,7 @@ var Post = React.createClass({
   },
   handleEdit: function(){
     this.setState({editmode: true});
+    return false;
   },
   handleUpdate: function(id, body){
     this.setState({editmode: false});
